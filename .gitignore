@@ -58,6 +58,6 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-# PlayFab
+# Extras
 Assets/PlayFabEditorExtensions
 Assets/PlayFabSDK
