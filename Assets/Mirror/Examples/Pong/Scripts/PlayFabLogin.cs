@@ -1,33 +1,47 @@
 using UnityEngine;
 using PlayFab;
 using PlayFab.ClientModels;
+using TMPro;
 
 public class PlayFabLogin : MonoBehaviour
 {
-    [SerializeField] private string customId = default;
+    [SerializeField] private GameObject signInDisplay = default;
+    [SerializeField] private TMP_InputField usernameInputField = default;
+    [SerializeField] private TMP_InputField emailInputField = default;
+    [SerializeField] private TMP_InputField passwordInputField = default;
 
     public static string SessionTicket;
 
-    private void Start()
+    public void CreateAccount()
     {
-        var request = new LoginWithCustomIDRequest
+        PlayFabClientAPI.RegisterPlayFabUser(new RegisterPlayFabUserRequest
         {
-            CustomId = customId,
-            CreateAccount = true
-        };
-
-        PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, OnLoginFailure);
+            Username = usernameInputField.text,
+            Email = emailInputField.text,
+            Password = passwordInputField.text
+        }, result =>
+        {
+            SessionTicket = result.SessionTicket;
+            signInDisplay.SetActive(false);
+        }, error =>
+        {
+            Debug.LogError(error.GenerateErrorReport());
+        });
     }
 
-    private void OnLoginSuccess(LoginResult result)
+    public void SignIn()
     {
-        Debug.Log("Login Success");
-
-        SessionTicket = result.SessionTicket;
-    }
-
-    private void OnLoginFailure(PlayFabError error)
-    {
-        Debug.LogError(error.GenerateErrorReport());
+        PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest
+        {
+            Username = usernameInputField.text,
+            Password = passwordInputField.text
+        }, result =>
+        {
+            SessionTicket = result.SessionTicket;
+            signInDisplay.SetActive(false);
+        }, error =>
+        {
+            Debug.LogError(error.GenerateErrorReport());
+        });
     }
 }
